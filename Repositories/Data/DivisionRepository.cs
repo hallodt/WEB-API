@@ -59,10 +59,5 @@ namespace WebApi.Repositories.Data
         {
             throw new NotImplementedException();
         }
-
-        public int Login(int Id)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

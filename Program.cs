@@ -14,6 +14,7 @@ builder.Services.AddDbContext<MyContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("MyConnection")));
 builder.Services.AddScoped<DivisionRepository>();
 builder.Services.AddScoped<DepartementRepository>();
+builder.Services.AddScoped<AccountRepository>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

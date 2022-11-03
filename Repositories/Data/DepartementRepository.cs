@@ -43,11 +43,6 @@ namespace WebApi.Repositories.Data
             return myContext.Departements.Find(Id);
         }
 
-        public int Login(int Id)
-        {
-            throw new NotImplementedException();
-        }
-
         public int Update(Departement Entity)
         {
             myContext.Entry(Entity).State = EntityState.Modified;
