@@ -12,14 +12,15 @@ namespace WebApi.Repositories.Data
     public class AccountRepository
     {
         private MyContext myContext;
-        //public AccountViewModel AccountViewModel { get; set; }
+        public AccountViewModel accountViewModel;
 
-        public AccountRepository(MyContext myContext)
+        public AccountRepository(MyContext myContext, AccountViewModel accountViewModel)
         {
             this.myContext = myContext;
+            this.accountViewModel = accountViewModel;
         }
 
-        public ArrayList Login(string email, string password)
+        public AccountViewModel Login(string email, string password)
         {
             var data = myContext.Users
             .Include(x => x.Employee)
@@ -27,14 +28,19 @@ namespace WebApi.Repositories.Data
             .FirstOrDefault(x => x.Employee.Email == email);
             if (data != null && Hashing.ValidatePass(password, data.Password))
             {
-                var arrayList = new ArrayList();
-                arrayList.Add(data.Id.ToString());
-                arrayList.Add(data.Employee.FullName);
-                arrayList.Add(data.Employee.Email);
-                arrayList.Add(data.Role.Nama);
-
-                return arrayList;
-                
+                //var arrayList = new ArrayList();
+                //arrayList.Add(data.Id.ToString());
+                //arrayList.Add(data.Employee.FullName);
+                //arrayList.Add(data.Employee.Email);
+                //arrayList.Add(data.Role.Nama);
+                AccountViewModel accountViewModel = new AccountViewModel()
+                {
+                    Id = data.Id,
+                    FullName = data.Employee.FullName,
+                    Email = data.Employee.Email,
+                    Role = data.Role.Nama
+                };
+                return accountViewModel;
             }
             else
             {
@@ -70,7 +76,7 @@ namespace WebApi.Repositories.Data
                     RoleId = 1
                 };
                 myContext.Users.Add(user);
-                var resultUser = myContext.SaveChanges();
+                myContext.SaveChanges();
             }
             return 0;
         }
@@ -83,7 +89,7 @@ namespace WebApi.Repositories.Data
             {
                 data.Password = Hashing.HashPass(newPassword);
                 myContext.Entry(data).State = EntityState.Modified;
-                var resultUser = myContext.SaveChanges();
+                myContext.SaveChanges();
                 return 0;
             }
             else
@@ -102,9 +108,8 @@ namespace WebApi.Repositories.Data
             {
                 data.Password = Hashing.HashPass(newPassword);
                 myContext.Entry(data).State = EntityState.Modified;
-                var resultUser = myContext.SaveChanges();
+                myContext.SaveChanges();
                 return 0;
-  
             }
             else
             {

@@ -15,11 +15,10 @@ namespace WebApi.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
-        private AccountRepository AccountRepository;
-        //private AccountViewModel AccountViewModel;
+        private readonly AccountRepository accountRepository;
         public AccountController(AccountRepository accountRepository)
         {
-            this.AccountRepository = accountRepository;
+            this.accountRepository = accountRepository;
         }
 
 
@@ -29,21 +28,22 @@ namespace WebApi.Controllers
         {
             try
             {
-                var data = AccountRepository.Login(email, password);
+                var data = accountRepository.Login(email, password);
                 if (data != null)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
                         Message = "you are logged in",
-
-                        Data = new
-                        {
-                            Id = Convert.ToInt32(data[0]),
-                            FullName = data[1],
-                            Email = data[2],
-                            Role = data[3]
-                        }
+                        Data = data
+                        //Data = new
+                        //{
+                        //    Id = Convert.ToInt32(data[0]),
+                        //    FullName = data[1],
+                        //    Email = data[2],
+                        //    Role = data[3]
+                        //}
+                        
                     });
                 }
                 else if (data == null)
@@ -72,7 +72,7 @@ namespace WebApi.Controllers
         {
             try
             {
-                var data = AccountRepository.Register(fullname, email,birthDate,password);
+                var data = accountRepository.Register(fullname, email,birthDate,password);
                 if (data == 0)
                 {
                     return Ok(new
@@ -101,13 +101,13 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("Change Password")]
         public IActionResult ChangePassword(string email,string oldPassword,string newPassword)
         {
             try
             {
-                var data = AccountRepository.ChangePassword(email,oldPassword,newPassword);
+                var data = accountRepository.ChangePassword(email,oldPassword,newPassword);
                 if (data == 0)
                 {
                     return Ok(new
@@ -136,13 +136,13 @@ namespace WebApi.Controllers
             return Ok();
         }
 
-        [HttpPost]
+        [HttpPut]
         [Route("Forgot Password")]
         public IActionResult ForgotPassword(string email, DateTime birthdate, string newPassword)
         {
             try
             {
-                var data = AccountRepository.ForgotPassword(email, birthdate, newPassword);
+                var data = accountRepository.ForgotPassword(email, birthdate, newPassword);
                 if (data == 0)
                 {
                     return Ok(new
