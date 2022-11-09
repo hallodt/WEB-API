@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -24,8 +25,6 @@ namespace WebApi.Controllers
             this.accountRepository = accountRepository;
         }
 
-
-
         [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
@@ -43,7 +42,7 @@ namespace WebApi.Controllers
                         new Claim("Id", data.Id.ToString()),
                         new Claim("FullName", data.FullName),
                         new Claim("Email", data.Email),
-                        new Claim("Role", data.Role)
+                        new Claim("role", data.Role)
 
                         //new Claim("Id", accountViewModel.Id.ToString()),
                         //new Claim("FullName", accountViewModel.FullName),
@@ -60,19 +59,6 @@ namespace WebApi.Controllers
                         expires: DateTime.UtcNow.AddMinutes(10),
                         signingCredentials: signIn);
                     return Ok(new JwtSecurityTokenHandler().WriteToken(token));
-                    //return Ok(new
-                    //{
-                    //    StatusCode = 200,
-                    //    Message = "you are logged in",
-
-                    //    //Data = new
-                    //    //{
-                    //    //    Id = Convert.ToInt32(data[0]),
-                    //    //    FullName = data[1],
-                    //    //    Email = data[2],
-                    //    //    Role = data[3]
-                    //    //}
-                    //});
                 }
                 else if (data == null)
                 {

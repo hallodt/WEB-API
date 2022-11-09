@@ -1,49 +1,78 @@
-﻿using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System.Security.Cryptography.Xml;
-using WebApi.Context;
-using WebApi.Handler;
-using WebApi.Models;
-using WebApi.Repositories.Data;
-using WebApi.ViewModels;
+using WebApi.Repositories.Interface;
 
-namespace WebApi.Controllers
+namespace WebApi.Base
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AccountController : ControllerBase
+    public class BaseController<Repository, Entity> : ControllerBase
+        where Repository : class, IRepository<Entity, int>
+        where Entity : class
     {
-        private readonly AccountRepository accountRepository;
-        public AccountController(AccountRepository accountRepository)
+        Repository repository;
+
+        public BaseController(Repository repository)
         {
-            this.accountRepository = accountRepository;
+            this.repository = repository;
         }
 
-
-        [HttpPost]
-        [Route("Login")]
-        public IActionResult Login(string email, string password)
+        [HttpGet]
+        public IActionResult GetAll()
         {
             try
             {
-                var data = accountRepository.Login(email, password);
-                if (data != null)
+                var data = repository.GetAll();
+                if (data == null)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "you are logged in",
-                        Data = data
+                        Message = "Data Not Found"
                     });
                 }
-                else if (data == null)
+                else
+                {
+                    return Ok(new
+                {
+                    messagae = "Data has been Retrieved",
+                    StatusCode = 200,
+                    data = data
+                });
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    StatusCode = 400,
+                    Message = ex.Message
+                });
+            }
+
+        }
+
+        [HttpGet("{Id}")]
+        public IActionResult GetById(int Id)
+        {
+            try
+            {
+                var data = repository.GetById(Id);
+                if (data == null)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "email or password incorrect"
+                        Message = "Data Not Found"
+                    });
+                }
+                else
+                {
+                    return Ok(new
+                    {
+                        messagae = "Data has been Retrieved",
+                        StatusCode = 200,
+                        data = data
                     });
                 }
             }
@@ -55,30 +84,29 @@ namespace WebApi.Controllers
                     Message = ex.Message
                 });
             }
-            return Ok();
         }
 
         [HttpPost]
-        [Route("Register")]
-        public IActionResult Register(string fullname,string email, DateTime birthDate,string password)
+        public IActionResult Create(Entity entity)
         {
+            
             try
             {
-                var data = accountRepository.Register(fullname, email,birthDate,password);
-                if (data == 0)
+               var data=repository.Create(entity);
+                if (data == null)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "account created successfully",
+                        Message = "Data failed to created"
                     });
                 }
-                else if (data == 1)
+                else
                 {
                     return Ok(new
                     {
+                        messagae = "Data has been created",
                         StatusCode = 200,
-                        Message = "account failed to create"
                     });
                 }
             }
@@ -90,30 +118,28 @@ namespace WebApi.Controllers
                     Message = ex.Message
                 });
             }
-            return Ok();
         }
 
         [HttpPut]
-        [Route("Change Password")]
-        public IActionResult ChangePassword(string email,string oldPassword,string newPassword)
+        public IActionResult Update(Entity entity)
         {
             try
             {
-                var data = accountRepository.ChangePassword(email,oldPassword,newPassword);
+                var data = repository.Update(entity);
                 if (data == 0)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "password changed successfully",
+                        Message = "Data Failed To Update"
                     });
                 }
-                else if (data == 1)
+                else
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "password failed to change"
+                        Message = "Data has been updated"
                     });
                 }
             }
@@ -125,30 +151,28 @@ namespace WebApi.Controllers
                     Message = ex.Message
                 });
             }
-            return Ok();
         }
 
-        [HttpPut]
-        [Route("Forgot Password")]
-        public IActionResult ForgotPassword(string email, DateTime birthdate, string newPassword)
+        [HttpDelete]
+        public IActionResult Delete(int Id)
         {
             try
             {
-                var data = accountRepository.ForgotPassword(email, birthdate, newPassword);
+                var data = repository.Delete(Id);
                 if (data == 0)
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "data changed successfully",
+                        Message = "Data Failed To Delete"
                     });
                 }
-                else if (data == 1)
+                else
                 {
                     return Ok(new
                     {
                         StatusCode = 200,
-                        Message = "data failed to change"
+                        Message = "Data has been deleted"
                     });
                 }
             }
@@ -160,8 +184,6 @@ namespace WebApi.Controllers
                     Message = ex.Message
                 });
             }
-            return Ok();
         }
-
     }
 }

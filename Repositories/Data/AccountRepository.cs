@@ -28,11 +28,6 @@ namespace WebApi.Repositories.Data
             .FirstOrDefault(x => x.Employee.Email == email);
             if (data != null && Hashing.ValidatePass(password, data.Password))
             {
-                //var arrayList = new ArrayList();
-                //arrayList.Add(data.Id.ToString());
-                //arrayList.Add(data.Employee.FullName);
-                //arrayList.Add(data.Employee.Email);
-                //arrayList.Add(data.Role.Nama);
                 AccountViewModel accountViewModel = new AccountViewModel()
                 {
                     Id = data.Id,
