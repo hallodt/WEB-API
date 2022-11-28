@@ -25,7 +25,8 @@ namespace WebApi.Controllers
             this.accountRepository = accountRepository;
         }
 
-        [HttpPost]
+        [AllowAnonymous]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login(string email, string password)
         {
             try
